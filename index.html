@@ -1,0 +1,153 @@
+<!doctype html>
+<!--[if lt IE 7]>
+  <html lang="en-us" class="no-js ie6 oldie">
+<![endif]-->
+<!--[if IE 7]>    
+  <html lang="en-us" class="no-js ie7 oldie">
+<![endif]-->
+<!--[if IE 8]>    
+  <html lang="en-us" class="no-js ie8 oldie">
+<![endif]-->
+<!--[if IE 9]>
+  <html lang="en-us" class="ie9">
+<![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en-us">
+<!--<![endif]-->
+
+<head>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+	<!--
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/plugins/CSSPlugin.min.js"></script>
+-->
+	<!--
+	<script src="BezierPlugin.min.js"></script>
+-->
+
+	<style type="text/css">
+	.banner {
+		width: 1024px;
+		height: 300px;
+		background: #f4f4f4;
+		overflow:  hidden;
+		position:  absolute;
+	}
+	.particle {
+		width: 50px;
+		height:50px;
+		background: #888;
+		position: absolute;
+	}
+
+
+	.particle-1 {
+		width:    170px;
+		height:   170px;
+		background: url(svg/rectangle02.svg);
+	}
+	.particle-2 {
+		width:    170px;
+		height:   170px;
+		background: url(svg/rectangle03.svg); 
+	}
+	.particle-3 {
+		width:     186px;
+		height:    177px;
+		background: url(svg/rectangle04.svg);
+	}
+
+	</style>
+
+	<script>
+
+
+	var animation = {
+
+		probability : 0.15,
+
+		speed : 5,
+
+		heightRandomisation : 50,
+
+		getRandom : function(min, max) {
+  			return Math.random() * (max - min) + min;
+		},
+
+		getRandomisedPath : function() {
+			return [
+				{x : 100, y : 100},
+				{x : 600, y : this.getRandom(40, 60)},
+				{x : 1200, y : this.getRandom(30, 80)}
+			];
+		},
+
+		getRandomisedScale : function() {
+			return 1 - (Math.random()/10);
+		},
+
+		getParticle : function() {
+			var $particle = $('<div class="particle"></div>');
+			$particle.addClass('particle-' + Math.round(this.getRandom(1, 3)));
+			return $particle;
+		},
+
+		emitOne : function() {
+			var $particle = this.getParticle();
+			$('.banner').append($particle);
+			var path = this.getRandomisedPath();
+
+			// Animate particle
+			TweenMax.to($particle, this.speed, {
+				bezier:{ values: path },
+				onComplete : function() {
+					$particle.remove();
+				}
+			});
+
+			var finalScale = this.getRandomisedScale();
+			TweenMax.to($particle, 0, {scale : 0});
+			TweenMax.to($particle, this.speed, {scale: finalScale});
+
+		},
+
+		emitter : function() {
+			if(Math.random() < this.probability) {
+				this.emitOne();
+			}
+		}
+	}
+
+	$(function() {
+
+		var speed = 20;
+	
+		var runLoop = function() {
+			animation.emitter();
+			window.setTimeout(runLoop, speed);
+
+		}
+
+		runLoop();
+	
+		animation.emitOne();
+	
+
+
+	});
+
+
+	</script>
+</head>
+
+<body>
+
+  <div class="banner">
+
+
+  </div>
+
+</body>
+
+</html>
